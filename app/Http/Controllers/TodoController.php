@@ -93,6 +93,22 @@ class TodoController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if (Todo::where('id', $id)->exists()) {
+            $todo = Todo::find($id);
+            $todo->title = is_null($request->title) ? $todo->title : $request->title;
+            $todo->description = is_null($request->description) ? $todo->description : $request->description;
+            $todo->status = is_null($request->status) ? $todo->status : $request->status;
+            $todo->from = is_null($request->from) ? $todo->from : $request->from;
+            $todo->to = is_null($request->to) ? $todo->to : $request->to;
+            $todo->save();
+            return response()->json([
+                "message" => "Todo updated successfully"
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "Todo not found"
+            ], 404);
+        }
     }
 
     /**
@@ -103,6 +119,16 @@ class TodoController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if (Todo::where('id', $id)->exists()) {
+            $todo = Todo::find($id);
+            $todo->delete();
+            return response()->json([
+                "message" => "Todo deleted"
+            ], 202);
+        } else {
+            return response()->json([
+                "message" => "Todo not found"
+            ], 404);
+        }
     }
 }
